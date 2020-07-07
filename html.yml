@@ -1,0 +1,37 @@
+apiVerison: v1
+kind: Service
+metadata:
+  name: apache-server
+  labels:
+    country: IN
+spec:
+  selector:
+    env: testing
+    name: testweb
+  type: NodePort
+  ports:
+  - nodePort: 31000
+    port: 80
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myweb-pod
+  labels:
+    country: IN
+    name: testweb
+    dc: "2"
+    env: testing
+
+spec:
+  containers:
+  - name: second-one
+    image: httpd
+    volumeMounts:
+      - name: pvc-volume
+        mountPath: /usr/local/apache2/htdocs
+  volumes:
+    - name: pvc-volume
+      persistentVolumeClaim:
+        claimName: pv-claim-name
