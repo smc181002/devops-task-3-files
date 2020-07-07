@@ -1,39 +1,40 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: myweb-service
+  name: myweb-service-test
 spec:
   type: NodePort
   ports:
     - port: 80
       targetPort: 80
-      nodePort: 32000
+      nodePort: 31000
   selector:
-    app: web-app
+    app: web-app-test
     region: IN
+    env: testing
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myweb-dep
+  name: myweb-dep-test
   labels:
-    app: web-app
+    app: web-app-test
     framework: react
     region: IN
 spec:
   replicas: 3
   selector:
     matchExpressions:
-      - { key: env, operator: In, values: [production]}
+      - { key: env, operator: In, values: [testing]}
       - { key: region, operator: In, values: [IN]}
+      - { key: app, operator: In, values: [web-app-test]}
   template:
     metadata:
+      name: myweb-pod-test
       labels:
-        env: production
+        env: testing
         region: IN
-        app: web-app
-
-      name: myweb-pod
+        app: web-app-test
     spec:
       containers:
         - name: myweb-con
